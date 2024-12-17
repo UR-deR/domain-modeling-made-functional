@@ -1,43 +1,72 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 printfn "Hello from F#"
 
-type AppleVariety = 
-    | Fuji
-    | GrannySmith
-    | GoldenDelicious
+type Topic = 
+| DailyConversation
+| Pronunciation
+| Grammar
+| Vocabulary
 
-type BananaVariety = 
-    | Cavendish
-    | RedDacca
+type Place = 
+| Online
+| OnCampus
 
-type CherryVariety = 
-    | Bing
-    | Rainier
+type SessionDetail = {
+    Duration: int // from 30 mins to 60 mins
+    Place: Place
+    Topic: Topic
+}
 
-type FruitSnack = 
-    | Apple of AppleVariety
-    | Banana of BananaVariety
-    | Cherry of CherryVariety
+type UnvalidatedSessionDetail = SessionDetail
+type ValidatedSessionDetail = SessionDetail
 
-let fuji = Apple Fuji
+type UnvalidatedBooking = {
+    StudentNumber: string
+    BookingId: string
+    SessionDetail: UnvalidatedSessionDetail
+}
 
-printfn "%A" fuji
+type ValidatedBooking = {
+    StudentNumber: string
+    BookingId: string
+    SessionDetail: ValidatedSessionDetail
+}
 
-type Person = { First: string; Last: string }
+type Result<'Success, 'Failures> =
+| Success of 'Success
+| Failure of 'Failures
 
-let person = { First = "John"; Last = "Doe" }
+type AsyncResult<'Success, 'Failures> = Async<Result<'Success, 'Failures>>
 
-let { First = first; Last = last } = person
+type ValidateBooking = UnvalidatedBooking -> AsyncResult<ValidatedBooking, ValidationError list>
+and ValidationError = {
+    FieldName: string
+    ErrorDescription: string
+}
 
-type OrderQuantity = | UnitQuantity of int | KilogramQuantity of decimal
+type BookingCompleted = Undefined
 
-let anOrderQuantity = UnitQuantity 10
+type PlaceBooking = ValidatedBooking -> AsyncResult<BookingCompleted, BookingError list>
+and BookingError = {
+    ErrorDescription: string
+}
 
-let anKilogramQuantity = KilogramQuantity 2.5m
+type NotificationSent = Undefined
 
-let printQuantity aOrderQty = 
-    match aOrderQty with
-    | UnitQuantity uQty -> printfn "%i units" uQty
-    | KilogramQuantity qty -> printfn "%f kg" qty
+type NofifyStudent = BookingCompleted -> AsyncResult<NotificationSent, NotificationError list>
+and NotificationError = {
+    ErrorDescription: string
+}
 
-printQuantity anOrderQuantity
+
+// let bookConservationSession
+//     (validateBooking: ValidateBooking)
+//     (placeBooking: PlaceBooking)
+//     (notifyStudent: NofifyStudent)
+//     (unvalidatedBooking: UnvalidatedBooking) =
+//     async {
+//         let! validatedBooking = validateBooking unvalidatedBooking
+//         let! _ = placeBooking validatedBooking
+//         let! _ = notifyStudent BookingCompleted.Undefined
+//         return ()
+//     }

@@ -1,0 +1,29 @@
+workflow: "Book Conversation Session"
+  input: Booking Form
+  output: BookingCompleted event OR InvalidBooking
+
+  steps:
+    step: "ValidateBooking"
+      input: UnvalidatedBooking
+      output: ValidatedBooking or ValidationError
+      dependencies: [CheckStudentExists, CheckBookingAvailability]
+      # Check if student exists in the system
+      # Check booking availability
+        # if student select offline, check if student assistant is available for offline session
+      # If both checks pass, return ValidatedBooking, otherwise return ValidationError
+
+    step: "PlaceBooking"
+      input: ValidatedBooking
+      output: BookingCompleted or BookingFailed
+      dependencies: [CheckBookingLimit, CheckCancelLimit]
+      # Booking can be made twice a week.
+      # If a student has already made two bookings, return BookingFailed
+      # If a student ever cancel booking more then 3 times, return BookingFailed
+      # Otherwise, return BookingCompleted
+
+    step: "NotifyStudent"
+      input: BookingCompleted
+      output: None
+      dependencies: []
+      # Send email and SMS to student
+      # If both notifications are sent successfully, return NotificationSent, otherwise return NotificationFailed
