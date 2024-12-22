@@ -1,20 +1,24 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 printfn "Hello from F#"
 
-type Topic = 
-| DailyConversation
-| Pronunciation
-| Grammar
-| Vocabulary
-
 type Place = 
 | Online
 | OnCampus
 
+type Language = 
+| English
+| Japanese
+
+type StartAt = StartAt of System.DateTime
+
+type EndAt = EndAt of System.DateTime
+
+type StudentCode = StudentCode of string
 type SessionDetail = {
-    Duration: int // from 30 mins to 60 mins
     Place: Place
-    Topic: Topic
+    Language: Language
+    StartAt: StartAt
+    EndAt: EndAt
 }
 
 type UnvalidatedSessionDetail = SessionDetail
@@ -32,11 +36,11 @@ type ValidatedBooking = {
     SessionDetail: ValidatedSessionDetail
 }
 
-type Result<'Success, 'Failures> =
-| Success of 'Success
-| Failure of 'Failures
+type Result<'success, 'failures> =
+| Success of 'success
+| Failure of 'failures
 
-type AsyncResult<'Success, 'Failures> = Async<Result<'Success, 'Failures>>
+type AsyncResult<'success, 'failures> = Async<Result<'success, 'failures>>
 
 type ValidateBooking = UnvalidatedBooking -> AsyncResult<ValidatedBooking, ValidationError list>
 and ValidationError = {
@@ -57,16 +61,3 @@ type NofifyStudent = BookingCompleted -> AsyncResult<NotificationSent, Notificat
 and NotificationError = {
     ErrorDescription: string
 }
-
-
-// let bookConservationSession
-//     (validateBooking: ValidateBooking)
-//     (placeBooking: PlaceBooking)
-//     (notifyStudent: NofifyStudent)
-//     (unvalidatedBooking: UnvalidatedBooking) =
-//     async {
-//         let! validatedBooking = validateBooking unvalidatedBooking
-//         let! _ = placeBooking validatedBooking
-//         let! _ = notifyStudent BookingCompleted.Undefined
-//         return ()
-//     }
